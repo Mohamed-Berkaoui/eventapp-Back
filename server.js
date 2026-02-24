@@ -5,8 +5,13 @@ const {
   getMyProfile,
   updateMyProfile,
 } = require("./controllers/user.controllers");
-const jwt = require("jsonwebtoken");
 const verifyUser = require("./middleware/verifyUser");
+const {
+  getAllEvents,
+  getEventById,
+  createEvent,
+} = require("./controllers/event.controllers");
+const checkOrganizer = require("./middleware/checkOrganizer");
 const server = express();
 
 server.use(express.json());
@@ -20,7 +25,16 @@ server.post("/api/auth/login", login);
  */
 
 server.get("/api/users/me", verifyUser, getMyProfile);
-server.put("/api/users/me",verifyUser, updateMyProfile);
+server.put("/api/users/me", verifyUser, updateMyProfile);
+
+/**
+ * EVENT ROUTES
+ */
+
+server.get("/api/events", verifyUser, getAllEvents);
+server.post("/api/events", verifyUser,checkOrganizer, createEvent);
+
+server.get("/api/events/:id", verifyUser,  getEventById);
 
 server.listen(3000, function () {
   connectToDb();

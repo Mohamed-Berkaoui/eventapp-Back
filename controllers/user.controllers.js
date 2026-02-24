@@ -1,4 +1,7 @@
 const userModel = require("../models/user.model");
+const ErrorRes = require("../views/error");
+const FailRes = require("../views/fail");
+const SuccessRes = require("../views/success");
 
 async function getMyProfile(req, res) {
   try {
@@ -7,11 +10,11 @@ async function getMyProfile(req, res) {
     if (!profile) {
       return res
         .status(400)
-        .json({ status: "FAIL", data: "profile not found" });
+        .json(new FailRes( "profile not found" ));
     }
-    res.status(200).json({ status: "SUCCESS", data: profile });
+    res.json(new SuccessRes(profile));
   } catch (error) {
-    res.status(500).json({ status: "ERROR", message: error.message });
+    res.json(new ErrorRes(error.message));
   }
 }
 
@@ -25,11 +28,11 @@ async function updateMyProfile(req, res) {
       { returnDocument: "after" },
     );
     if (!updatedUser) {
-      return res.status(400).json({ status: "FAIL", data: "user not found" });
+      return res.json(FailRes("user not found"));
     }
-    res.status(201).json({ status: "SUCCESS", data: updatedUser });
+    res.json(new SuccessRes(updatedUser,201));
   } catch (error) {
-    res.status(500).json({ status: "ERROR", message: error.message });
+    res.json(new ErrorRes(error.message));
   }
 }
 
