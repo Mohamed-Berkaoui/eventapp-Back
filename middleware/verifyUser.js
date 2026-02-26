@@ -7,7 +7,6 @@
           .status(401)
           .json({ status: "FAIL", data: "token is required" });
       }
-      console.log(token)
       const decode = jwt.verify(token, "hello world");//{ user: 23343AZ3 }
        req.user=decode.user
        next()

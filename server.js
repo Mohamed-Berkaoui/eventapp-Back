@@ -10,8 +10,11 @@ const {
   getAllEvents,
   getEventById,
   createEvent,
+  updateMyEvent,
+  deleteMyEvent,
 } = require("./controllers/event.controllers");
 const checkOrganizer = require("./middleware/checkOrganizer");
+const { createRegistration } = require("./controllers/registration.controllers");
 const server = express();
 
 server.use(express.json());
@@ -23,18 +26,22 @@ server.post("/api/auth/login", login);
 /**
  * USER ROUTS
  */
-
-server.get("/api/users/me", verifyUser, getMyProfile);
-server.put("/api/users/me", verifyUser, updateMyProfile);
-
+server.use(verifyUser);
+server.get("/api/users/me", getMyProfile);
+server.put("/api/users/me", updateMyProfile);
 /**
  * EVENT ROUTES
  */
+server.get("/api/events", getAllEvents);
+server.get("/api/events/:id", getEventById);
 
-server.get("/api/events", verifyUser, getAllEvents);
-server.post("/api/events", verifyUser,checkOrganizer, createEvent);
-
-server.get("/api/events/:id", verifyUser,  getEventById);
+server.post("/api/events", checkOrganizer,createEvent);
+server.put("/api/events/:id",checkOrganizer ,updateMyEvent);
+server.delete("/api/events/:id", checkOrganizer,deleteMyEvent);
+/**
+ * REGISTRATION ROUTES
+ */
+server.post('/api/events/:id/register',createRegistration)
 
 server.listen(3000, function () {
   connectToDb();

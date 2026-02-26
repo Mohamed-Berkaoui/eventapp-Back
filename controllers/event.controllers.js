@@ -6,7 +6,7 @@ const SuccessRes = require("../views/success");
 
 async function getAllEvents(req, res) {
   try {
-    const events = await eventModel.find();
+    const events = await eventModel.find({status:"active"});
 
     if (events.length == 0) {
       return res.json(new FailRes("no events found"));
@@ -24,7 +24,7 @@ async function getEventById(req, res) {
     if (!mongoose.isValidObjectId(eventId)) {
       return res.json(new FailRes("wrong id"));
     }
-    const event = await eventModel.findById(eventId);
+    const event = await eventModel.findOne({_id:eventId,status:"active"});
 
     if (!event) {
       return res.json(new FailRes("event not found"));
@@ -54,4 +54,47 @@ async function createEvent(req, res) {
     res.json(new ErrorRes(error.message));
   }
 }
-module.exports = { getAllEvents, getEventById, createEvent };
+
+async function updateMyEvent(req, res) {
+  try {
+    // const {title,description,date,location,capacity,imageUrl}=req.body
+    const eventId = req.params.id;
+
+    const updatedEvent = await eventModel.updateOne(
+      { _id: eventId, organizer: req.user,status:'active' },
+      req.body,
+    );
+    if (updatedEvent.modifiedCount == 0) {
+      return res.json(new FailRes("somthing went wrong", 403));
+    }
+
+    res.json(new SuccessRes(updatedEvent));
+  } catch (error) {
+    res.json(new ErrorRes(error.message));
+  }
+}
+
+async function deleteMyEvent(req, res) {
+  try {
+    const eventId = req.params.id;
+
+    const updateRes = await eventModel.updateOne(
+      { _id: eventId, organizer: req.user },
+      { status: "cancelled" },
+    );
+    if (updateRes.modifiedCount == 0) {
+      return res.json(new FailRes("somthing want wrong", 403));
+    }
+
+    res.json(new SuccessRes("event deleted successfuly"));
+  } catch (error) {
+    res.json(new ErrorRes(error.message));
+  }
+}
+module.exports = {
+  getAllEvents,
+  getEventById,
+  createEvent,
+  updateMyEvent,
+  deleteMyEvent,
+};
