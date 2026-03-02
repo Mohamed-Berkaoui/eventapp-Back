@@ -17,6 +17,19 @@ async function getAllEvents(req, res) {
     res.json(new ErrorRes(error.message));
   }
 }
+async function getMyEvents(req, res) {
+  try {
+    const events = await eventModel.find({organizer:req.user});
+
+    if (events.length == 0) {
+      return res.json(new FailRes("no events found"));
+    }
+
+    res.json(new SuccessRes(events));
+  } catch (error) {
+    res.json(new ErrorRes(error.message));
+  }
+}
 
 async function getEventById(req, res) {
   try {
@@ -97,4 +110,5 @@ module.exports = {
   createEvent,
   updateMyEvent,
   deleteMyEvent,
+  getMyEvents
 };

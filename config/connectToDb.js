@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 function connectToDb() {
-  const MONGOURI = "mongodb://localhost:27017/";
+  const MONGOURI = "mongodb+srv://mohamed:IKh9AxK2qIIwWI5s@cluster0.ghbjfij.mongodb.net/";
   mongoose
     .connect(MONGOURI, { dbName: "eventApp" })
     .then(() => console.log("db running"))

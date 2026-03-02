@@ -53,6 +53,8 @@ Could embed in `Event.attendees` or use its own collection to track timestamps.
 
 ### Events
 - `GET /api/events` – list, supports query params (`search`, `dateFrom`, `dateTo`, `location`).  
+
+- `GET /api/events/myevents` – **organizer only**, list organizer events .  
 - `GET /api/events/:id` – event details.  
 - `POST /api/events` – **organizer only**, create event.  
 - `PUT /api/events/:id` – **organizer only**, modify own event.  
