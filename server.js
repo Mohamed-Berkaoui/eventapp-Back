@@ -15,9 +15,20 @@ const {
   getMyEvents,
 } = require("./controllers/event.controllers");
 const checkOrganizer = require("./middleware/checkOrganizer");
-const { createRegistration, cancelRegistration, listAttendees, getMyRegistrations } = require("./controllers/registration.controllers");
+const {
+  createRegistration,
+  cancelRegistration,
+  listAttendees,
+  getMyRegistrations,
+} = require("./controllers/registration.controllers");
 const server = express();
 
+var cors = require('cors')
+
+server.use(cors({
+  origin:["http://localhost:5173"],
+  methods:['GET',"POST","DELETE","PUT"]
+}))
 server.use(express.json());
 /**
  * AUTH ROUTS
@@ -29,24 +40,28 @@ server.post("/api/auth/login", login);
  */
 server.use(verifyUser);
 server.get("/api/users/me", getMyProfile);
-server.put("/api/users/me", updateMyProfile); 
+server.put("/api/users/me", updateMyProfile);
 /**
  * EVENT ROUTES
  */
 server.get("/api/events", getAllEvents);
-server.get("/api/events/myevents",checkOrganizer, getMyEvents);
+server.get("/api/events/myevents", checkOrganizer, getMyEvents);
 server.get("/api/events/:id", getEventById);
-server.post("/api/events", checkOrganizer,createEvent);
-server.put("/api/events/:id",checkOrganizer ,updateMyEvent);
-server.delete("/api/events/:id", checkOrganizer,deleteMyEvent);
+server.post("/api/events", checkOrganizer, createEvent);
+server.put("/api/events/:id", checkOrganizer, updateMyEvent);
+server.delete("/api/events/:id", checkOrganizer, deleteMyEvent);
 
 /**
  * REGISTRATION ROUTES
-*/
-server.post('/api/regsitrations/:eventid',createRegistration)
-server.delete ('/api/regsitrations/:eventid',cancelRegistration)
-server.get('/api/regsitrations/:eventid/attendees',checkOrganizer,listAttendees)
-server.get("/api/regsitrations",getMyRegistrations)
+ */
+server.post("/api/regsitrations/:eventid", createRegistration);
+server.delete("/api/regsitrations/:eventid", cancelRegistration);
+server.get(
+  "/api/regsitrations/:eventid/attendees",
+  checkOrganizer,
+  listAttendees,
+);
+server.get("/api/regsitrations", getMyRegistrations);
 
 server.listen(3000, function () {
   connectToDb();

@@ -46,8 +46,9 @@ async function register(req, res) {
     const token = jwt.sign({ user: existUser._id }, "hello world", {
       expiresIn: "1d",
     });
-
-    res.json(new SuccessRes(token));
+    console.log("first")
+    // res.cookie("token",token,{sameSite:false})
+    res.json(new SuccessRes({token,role:existUser.role}));
   } catch (error) {
     res.json(new ErrorRes(error.message));
   }
