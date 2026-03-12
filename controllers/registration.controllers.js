@@ -1,3 +1,4 @@
+const { Types } = require("mongoose");
 const eventModel = require("../models/event.model");
 const registrationModel = require("../models/registration.model");
 const ErrorRes = require("../views/error");
@@ -35,8 +36,9 @@ async function createRegistration(req, res) {
         },
         { status: "active" },
       );
+      const event =await eventModel.findById(eventId)
       return res.json(
-        new SuccessRes({ ...existRegsitration._doc, status: "active" }),
+        new SuccessRes({ ...existRegsitration._doc,event:event, status: "active" }),
       );
     }
 
@@ -44,7 +46,7 @@ async function createRegistration(req, res) {
       user: req.user,
       event: eventId,
     });
-    res.json(new SuccessRes(newRegistration));
+    res.json(new SuccessRes({...newRegistration,event:event}));
   } catch (error) {
     res.json(new ErrorRes(error.message));
   }
@@ -93,7 +95,7 @@ async function listAttendees(req, res) {
 async function getMyRegistrations(req, res) {
   try {
     const userId = req.user;
-    const registrations = await registrationModel.find({ user: userId ,status:"active"}).populate('event');
+    const registrations = await registrationModel.find({ user:userId ,status:"active"}).populate('event');
     if (!registrations.length) {
       return res.json(new FailRes("no registration found"));
     }
